@@ -68,7 +68,7 @@
 
     // Build KB API URL using user's filter text
     function buildKbUrl(filterText){
-      const base = 'https://dev-chat-integration.bolddesk.com/kb-api/v1.0/articles/en-US';
+      const base = '/kb-api/v1.0/articles/en-US';
       const params = new URLSearchParams({
         view: 'published',
         q: 'brands:[1]',
@@ -137,7 +137,7 @@
         return;
       }
 
-      client.request({ url: url, type: 'GET', isInternal: false }).then(response => {
+      client.request({ url: url, type: 'GET', isInternal: true }).then(response => {
         const items = response && response.result ? response.result : [];
         renderResults(items);
         log('Received ' + items.length + ' results');
