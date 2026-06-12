@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>KB Search — Insert KB Link to Ticket</title>
+  <style>
+    body{font-family:Segoe UI,Roboto,Arial,sans-serif;padding:18px;background:#f5f6fb}
+    .card{max-width:900px;margin:0 auto;background:#fff;padding:16px;border-radius:8px;box-shadow:0 6px 18px rgba(0,0,0,0.06)}
+    .row{display:flex;gap:8px}
+    input[type=text]{flex:1;padding:8px;border:1px solid #dcdfe6;border-radius:6px}
+    button{padding:8px 12px;background:#4b6ef6;color:#fff;border:none;border-radius:6px;cursor:pointer}
+    .results{margin-top:12px}
+    .item{padding:10px;border:1px solid #eef0fb;border-radius:6px;margin-bottom:8px;display:flex;justify-content:space-between;gap:12px}
+    .meta{color:#666;font-size:12px}
+    .log{margin-top:12px;background:#0f1720;color:#9fffb1;padding:10px;border-radius:6px;font-family:monospace;font-size:12px;max-height:220px;overflow:auto}
+    .status{display:inline-block;padding:6px 8px;border-radius:16px;background:#e6f0ff;color:#1e56d7;font-weight:600;margin-bottom:8px}
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h2>KB Search — Insert Link into Ticket Comment</h2>
+    <div class="status" id="status">Initializing SDK…</div>
+
+    <div class="row">
+      <input id="kb-query" type="text" placeholder="Enter search text (e.g. Comprehensive)" value="Comprehen">
+      <button id="search-btn">Search</button>
+    </div>
+
+    <div class="results" id="results"></div>
+
+    <h4 style="margin-top:8px">Logs</h4>
+    <div id="log" class="log"></div>
+  </div>
+
+  <script src="https://unpkg.com/bolddesk-final-framework-sdk@1.0.37/build/baf_sdk.min.js"></script>
+  <script>
+    let client = null;
+
+    function log(msg){
+      const el = document.getElementById('log');
+      const time = new Date().toISOString().replace('T',' ').replace('Z','');
+      el.textContent = time + '  ' + msg + '\n' + el.textContent;
+    }
+
+    function setStatus(text, isError){
+      const s = document.getElementById('status');
+      s.textContent = text;
+      s.style.background = isError ? '#ffe6e6' : '#e6f0ff';
+      s.style.color = isError ? '#8b1e1e' : '#1e56d7';
+    }
+
+    function initClient(){
+      if(typeof BAFClient === 'undefined'){
+        setStatus('BAFClient not available', true);
+        log('ERROR: BAFClient not found on page.');
+        return;
+      }
+      try{
+        client = BAFClient.init();
+        setStatus('SDK Ready');
+        log('Client initialized');
+      }catch(e){
+        setStatus('SDK init failed', true);
+        log('ERROR initializing client: ' + (e && e.message ? e.message : String(e)));
+      }
+    }
+
+    // Build KB API URL using user's filter text
+    function buildKbUrl(filterText){
+      const base = 'https://dev-chat-integration.bolddesk.com/kb-api/v1.0/articles/en-US';
+      const params = new URLSearchParams({
+        view: 'published',
+        q: 'brands:[1]',
+        Page: '1',
+        PerPage: '5',
+        filter: filterText,
+        orderBy: 'lastModifiedOn desc',
+        requiresCounts: 'true'
+      });
+      return base + '?' + params.toString();
+    }
+
+    function renderResults(items){
+      const container = document.getElementById('results');
+      container.innerHTML = '';
+      if(!items || !items.length){
+        container.innerHTML = '<div class="meta">No results</div>';
+        return;
+      }
+      items.forEach(it => {
+        const div = document.createElement('div');
+        div.className = 'item';
+        const left = document.createElement('div');
+        left.innerHTML = '<div><strong>' + (it.title || 'Untitled') + '</strong></div>' +
+                         '<div class="meta">Published: ' + (it.publishedOn || '-') + '</div>';
+        const right = document.createElement('div');
+        const btn = document.createElement('button');
+        btn.textContent = 'Insert Link';
+        btn.onclick = () => insertToComment(it.customerPortalUrl);
+        right.appendChild(btn);
+        div.appendChild(left);
+        div.appendChild(right);
+        container.appendChild(div);
+      });
+    }
+
+    function doInvoke(method, payload){
+      if(!client){ log('Invoke failed: client not initialized'); setStatus('Client missing', true); return; }
+      client.invoke(method, payload || {}).then(res => {
+        log('✅ ' + method + ' — ' + (typeof res === 'object' ? JSON.stringify(res) : String(res)));
+      }).catch(err => {
+        log('❌ ' + method + ' — ' + (err && err.message ? err.message : String(err)));
+      });
+    }
+
+    function insertToComment(url){
+      if(!url){ log('No URL to insert'); return; }
+      // Insert the customerPortalUrl into the ticket comment (append text)
+      const txt = url + '\n';
+      doInvoke('comment.appendText', { text: txt });
+      log('Invoked comment.appendText with: ' + txt);
+    }
+
+    function performSearch(){
+      const q = document.getElementById('kb-query').value.trim();
+      if(!q){ log('Enter search text'); return; }
+      const url = buildKbUrl(q);
+      log('Requesting: ' + url);
+      if(!client){
+        // Fallback: use fetch if SDK isn't present, but still show results raw
+        fetch(url).then(r=>r.json()).then(data=>{
+          const items = data && data.result ? data.result : [];
+          renderResults(items);
+          log('Fetched ' + items.length + ' items via fetch');
+        }).catch(e=>{ log('Fetch error: ' + (e && e.message? e.message : e)); });
+        return;
+      }
+
+      client.request({ url: url, type: 'GET', isInternal: false }).then(response => {
+        const items = response && response.result ? response.result : [];
+        renderResults(items);
+        log('Received ' + items.length + ' results');
+      }).catch(err => {
+        log('Request error: ' + (err && err.message ? err.message : String(err)));
+      });
+    }
+
+    // Wire UI
+    document.getElementById('search-btn').addEventListener('click', performSearch);
+    document.getElementById('kb-query').addEventListener('keydown', function(e){ if(e.key === 'Enter'){ performSearch(); } });
+
+    window.addEventListener('load', function(){ initClient(); });
+  </script>
+</body>
+</html>
