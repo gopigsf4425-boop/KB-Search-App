@@ -119,7 +119,7 @@
     function performSearch(){
       const q = document.getElementById('kb-query').value.trim();
       if(!q){ log('Enter search text'); return; }
-      const url = buildKbUrl(q);
+      const url = '/kb-api/v1.0/articles/en-US';
       log('Requesting: ' + url);
       if(!client){
         // Fallback: use fetch if SDK isn't present, but still show results raw
