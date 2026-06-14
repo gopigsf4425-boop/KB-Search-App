@@ -121,15 +121,6 @@
       if(!q){ log('Enter search text'); return; }
       const url = '/kb-api/v1.0/articles';
       log('Requesting: ' + url);
-      if(!client){
-        // Fallback: use fetch if SDK isn't present, but still show results raw
-        fetch(url).then(r=>r.json()).then(data=>{
-          const items = data && data.result ? data.result : [];
-          renderResults(items);
-          log('Fetched ' + items.length + ' items via fetch');
-        }).catch(e=>{ log('Fetch error: ' + (e && e.message? e.message : e)); });
-        return;
-      }
 
       client.request({ url: url, type: 'GET', isInternal: true }).then(response => {
         const items = response && response.result ? response.result : [];
