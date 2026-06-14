@@ -59,6 +59,10 @@
         btn.textContent = 'Insert Link';
         // compute a reliable URL: prefer `customerPortalUrl`, otherwise build one from id/slug
         const computedUrl = it.customerPortalUrl || (it.id ? (location.origin.replace(/\/$/, '') + '/en-US/kb/article/' + it.id + '/' + (it.slugTitle || '')) : null);
+       
+        console.log(it.customerPortalUrl);
+        console.log(computedUrl);
+
         btn.onclick = () => insertToComment(computedUrl);
         right.appendChild(btn);
         div.appendChild(left);
