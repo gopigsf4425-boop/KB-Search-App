@@ -13,7 +13,6 @@
     .results{margin-top:12px}
     .item{padding:10px;border:1px solid #eef0fb;border-radius:6px;margin-bottom:8px;display:flex;justify-content:space-between;gap:12px}
     .meta{color:#666;font-size:12px}
-    .log{margin-top:12px;background:#0f1720;color:#9fffb1;padding:10px;border-radius:6px;font-family:monospace;font-size:12px;max-height:220px;overflow:auto}
     .status{display:inline-block;padding:6px 8px;border-radius:16px;background:#e6f0ff;color:#1e56d7;font-weight:600;margin-bottom:8px}
   </style>
 </head>
@@ -28,20 +27,11 @@
     </div>
 
     <div class="results" id="results"></div>
-
-    <h4 style="margin-top:8px">Logs</h4>
-    <div id="log" class="log"></div>
   </div>
 
   <script src="https://unpkg.com/bolddesk-final-framework-sdk@1.0.37/build/baf_sdk.min.js"></script>
   <script>
     let client = null;
-
-    function log(msg){
-      const el = document.getElementById('log');
-      const time = new Date().toISOString().replace('T',' ').replace('Z','');
-      el.textContent = time + '  ' + msg + '\n' + el.textContent;
-    }
 
     function setStatus(text, isError){
       const s = document.getElementById('status');
@@ -53,26 +43,14 @@
     function initClient(){
       if(typeof BAFClient === 'undefined'){
         setStatus('BAFClient not available', true);
-        log('ERROR: BAFClient not found on page.');
         return;
       }
       try{
         client = BAFClient.init();
         setStatus('SDK Ready');
-        log('Client initialized');
       }catch(e){
         setStatus('SDK init failed', true);
-        log('ERROR initializing client: ' + (e && e.message ? e.message : String(e)));
       }
-    }
-
-    // Build KB API URL using user's filter text
-    function buildKbUrl(filterText){
-      const base = '/kb-api/v1.0/articles/en-US';
-      const params = new URLSearchParams({
-        requiresCounts: 'true'
-      });
-      return base + '?' + params.toString();
     }
 
     function renderResults(items){
@@ -102,34 +80,28 @@
     }
 
     function doInvoke(method, payload){
-      if(!client){ log('Invoke failed: client not initialized'); setStatus('Client missing', true); return; }
+      if(!client){ return; }
       client.invoke(method, payload || {}).then(res => {
-        log('✅ ' + method + ' — ' + (typeof res === 'object' ? JSON.stringify(res) : String(res)));
       }).catch(err => {
-        log('❌ ' + method + ' — ' + (err && err.message ? err.message : String(err)));
       });
     }
 
     function insertToComment(url){
-      if(!url){ log('No URL to insert'); return; }
+      if(!url){ }
       // Insert the customerPortalUrl into the ticket comment (append text)
       const txt = url + '\n';
       doInvoke('comment.appendText', { text: txt });
-      log('Invoked comment.appendText with: ' + txt);
     }
 
     function performSearch(){
       const q = document.getElementById('kb-query').value.trim();
-      if(!q){ log('Enter search text'); return; }
+      if(!q){ return; }
       const url = '/kb-api/v1.0/articles?Page=1&PerPage=5&filter='+q;
-      log('Requesting: ' + url);
 
       client.request({ url: url, type: 'GET', isInternal: true }).then(response => {
         const items = response && response.result ? response.result : [];
         renderResults(items);
-        log('Received ' + items.length + ' results');
       }).catch(err => {
-        log('Request error: ' + (err && err.message ? err.message : String(err)));
       });
     }
 
