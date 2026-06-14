@@ -91,7 +91,9 @@
         const right = document.createElement('div');
         const btn = document.createElement('button');
         btn.textContent = 'Insert Link';
-        btn.onclick = () => insertToComment(it.customerPortalUrl);
+        // compute a reliable URL: prefer `customerPortalUrl`, otherwise build one from id/slug
+        const computedUrl = it.customerPortalUrl || (it.id ? (location.origin.replace(/\/$/, '') + '/en-US/kb/article/' + it.id + '/' + (it.slugTitle || '')) : null);
+        btn.onclick = () => insertToComment(computedUrl);
         right.appendChild(btn);
         div.appendChild(left);
         div.appendChild(right);
