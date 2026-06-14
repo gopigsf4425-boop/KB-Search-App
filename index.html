@@ -13,13 +13,11 @@
     .results{margin-top:12px}
     .item{padding:10px;border:1px solid #eef0fb;border-radius:6px;margin-bottom:8px;display:flex;justify-content:space-between;gap:12px}
     .meta{color:#666;font-size:12px}
-    .status{display:inline-block;padding:6px 8px;border-radius:16px;background:#e6f0ff;color:#1e56d7;font-weight:600;margin-bottom:8px}
   </style>
 </head>
 <body>
   <div class="card">
     <h2>KB Search — Insert Link into Ticket Comment</h2>
-    <div class="status" id="status">Initializing SDK…</div>
 
     <div class="row">
       <input id="kb-query" type="text" placeholder="Enter search text (e.g. Comprehensive)" value="Comprehen">
@@ -33,23 +31,13 @@
   <script>
     let client = null;
 
-    function setStatus(text, isError){
-      const s = document.getElementById('status');
-      s.textContent = text;
-      s.style.background = isError ? '#ffe6e6' : '#e6f0ff';
-      s.style.color = isError ? '#8b1e1e' : '#1e56d7';
-    }
-
     function initClient(){
       if(typeof BAFClient === 'undefined'){
-        setStatus('BAFClient not available', true);
         return;
       }
       try{
         client = BAFClient.init();
-        setStatus('SDK Ready');
       }catch(e){
-        setStatus('SDK init failed', true);
       }
     }
 
