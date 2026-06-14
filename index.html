@@ -119,7 +119,7 @@
     function performSearch(){
       const q = document.getElementById('kb-query').value.trim();
       if(!q){ log('Enter search text'); return; }
-      const url = '/kb-api/v1.0/articlesPage=1&PerPage=5&filter='+q;
+      const url = '/kb-api/v1.0/articles?Page=1&PerPage=5&filter='+q;
       log('Requesting: ' + url);
 
       client.request({ url: url, type: 'GET', isInternal: true }).then(response => {
