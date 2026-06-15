@@ -4,21 +4,38 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>KB Search — Insert KB Link to Ticket</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
   <style>
-    body{font-family:Segoe UI,Roboto,Arial,sans-serif;padding:12px;background:#f5f6fb}
+    :root{
+      --accent-1: #4b6ef6;
+      --accent-2: #7b61ff;
+      --muted: #6b7280;
+      --card-bg: #ffffff;
+      --surface: #f5f6fb;
+    }
+    html,body{height:100%;}
+    body{font-family:Inter,Segoe UI,Roboto,Arial,sans-serif;padding:10px 12px 6px;background:var(--surface);display:flex;justify-content:flex-start;align-items:flex-start}
     .card{max-width:920px;width:100%;box-sizing:border-box;margin:0 auto;background:#fff;padding:12px;border-radius:8px;box-shadow:0 6px 18px rgba(0,0,0,0.06)}
     /* Layout row: allow wrapping on narrow viewports */
-    .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-    input[type=text]{flex:1 1 auto;min-width:120px;padding:8px;border:1px solid #dcdfe6;border-radius:6px;box-sizing:border-box}
-    button{flex:0 0 auto;padding:8px 12px;background:#4b6ef6;color:#fff;border:none;border-radius:6px;cursor:pointer}
+    .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+    input[type=text]{flex:1 1 auto;min-width:120px;padding:10px 12px;border:1px solid #e6e9f2;border-radius:10px;box-sizing:border-box;outline:none;background:linear-gradient(180deg,#fff,#fbfdff);box-shadow:0 6px 18px rgba(79,84,255,0.06);transition:box-shadow .18s,transform .12s}
+    input[type=text]:focus{box-shadow:0 10px 30px rgba(79,84,255,0.12);transform:translateY(-1px)}
+    button{flex:0 0 auto;padding:10px 14px;background:linear-gradient(90deg,var(--accent-1),var(--accent-2));color:#fff;border:none;border-radius:10px;cursor:pointer;font-weight:600;box-shadow:0 8px 20px rgba(75,110,246,0.18);transition:transform .15s,box-shadow .15s}
+    button:hover{transform:translateY(-3px);box-shadow:0 14px 30px rgba(75,110,246,0.22)}
     .results{margin-top:12px}
-    .item{padding:10px;border:1px solid #eef0fb;border-radius:6px;margin-bottom:8px;display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
-    .meta{color:#666;font-size:12px}
+    .item{padding:14px;border:1px solid rgba(15,23,32,0.04);border-radius:12px;margin-bottom:12px;display:flex;justify-content:space-between;gap:12px;align-items:flex-start;background:linear-gradient(180deg,#fff,#fbfdff);box-shadow:0 6px 18px rgba(16,24,40,0.03);transition:transform .12s,box-shadow .12s}
+    .item:hover{transform:translateY(-4px);box-shadow:0 18px 40px rgba(16,24,40,0.06)}
+    .meta{color:var(--muted);font-size:12px}
+    .title{font-weight:700;color:#0f1724;margin-bottom:6px}
+    .pub-badge{display:inline-block;padding:6px 8px;background:#eef2ff;color:var(--accent-1);border-radius:999px;font-weight:600;font-size:12px;margin-left:8px}
+    .right-col{display:flex;align-items:flex-start;gap:8px}
+    .insert-btn{padding:8px 12px;border-radius:10px;background:transparent;color:var(--accent-1);border:1px solid rgba(75,110,246,0.12);font-weight:700}
+    .insert-btn:hover{background:rgba(75,110,246,0.06)}
     /* Small screens: stack input and button, stack result item contents */
     @media (max-width:420px){
       .card{padding:10px}
       .row{flex-direction:column;align-items:stretch}
-      button{width:100%;margin-top:6px}
+      button{width:100%;margin-top:8px}
       .item{flex-direction:column;align-items:stretch}
       .item > div { width:100%; }
     }
