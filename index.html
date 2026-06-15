@@ -88,7 +88,7 @@
     function performSearch(){
       const q = document.getElementById('kb-query').value.trim();
       if(!q){ return; }
-      const url = '/kb-api/v1.0/articles?Page=1&PerPage=5&filter='+q;
+      const url = '/kb-api/v1.0/articles/en-US?Page=1&PerPage=5&filter='+q;
 
       client.request({ url: url, type: 'GET', isInternal: true }).then(response => {
         const items = response && response.result ? response.result : [];
