@@ -29,8 +29,12 @@
     .title{font-weight:700;color:#0f1724;margin-bottom:6px}
     .pub-badge{display:inline-block;padding:6px 8px;background:#eef2ff;color:var(--accent-1);border-radius:999px;font-weight:600;font-size:12px;margin-left:8px}
     .right-col{display:flex;align-items:flex-start;gap:8px}
-    .insert-btn{padding:8px 12px;border-radius:10px;background:transparent;color:var(--accent-1);border:1px solid rgba(75,110,246,0.12);font-weight:700}
-    .insert-btn:hover{background:rgba(75,110,246,0.06)}
+    /* Primary search button (keeps strong gradient) */
+    .search-btn{padding:10px 16px;font-weight:700;border-radius:10px}
+
+    /* Insert Link buttons are secondary/outlined */
+    .insert-btn{padding:10px 14px;border-radius:10px;background:#fff;color:var(--accent-1);border:1px solid rgba(75,110,246,0.18);font-weight:700;box-shadow:none}
+    .insert-btn:hover{background:linear-gradient(180deg,rgba(75,110,246,0.06),rgba(75,110,246,0.02));box-shadow:0 10px 24px rgba(75,110,246,0.06)}
     /* Small screens: stack input and button, stack result item contents */
     @media (max-width:420px){
       .card{padding:10px}
@@ -47,7 +51,7 @@
 
     <div class="row">
       <input id="kb-query" type="text" placeholder="Enter search text (e.g. Comprehensive)" value="Comprehen">
-      <button id="search-btn">Search</button>
+      <button id="search-btn" class="search-btn">Search</button>
     </div>
 
     <div class="results" id="results"></div>
@@ -82,6 +86,7 @@
                          '<div class="meta">Published: ' + (it.publishedOn || '-') + '</div>';
         const right = document.createElement('div');
         const btn = document.createElement('button');
+        btn.className = 'insert-btn';
         btn.textContent = 'Insert Link';
         // compute a reliable URL: prefer `customerPortalUrl`, otherwise build one from id/slug
         const computedUrl = it.customerPortalUrl || (it.id ? (location.origin.replace(/\/$/, '') + '/en-US/kb/article/' + it.id + '/' + (it.slugTitle || '')) : null);
