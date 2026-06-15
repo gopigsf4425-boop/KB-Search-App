@@ -14,15 +14,16 @@
       --surface: #f5f6fb;
     }
     html,body{height:100%;}
-    body{font-family:Inter,Segoe UI,Roboto,Arial,sans-serif;padding:10px 12px 6px;background:var(--surface);display:flex;justify-content:flex-start;align-items:flex-start}
-    .card{max-width:920px;width:100%;box-sizing:border-box;margin:0 auto;background:#fff;padding:12px;border-radius:8px;box-shadow:0 6px 18px rgba(0,0,0,0.06)}
+    body{font-family:Inter,Segoe UI,Roboto,Arial,sans-serif;padding:8px;background:var(--surface);display:flex;flex-direction:column;align-items:stretch;min-height:100vh}
+    /* Make card stretch to available height so it fills the iframe and removes empty area below */
+    .card{max-width:920px;width:100%;box-sizing:border-box;margin:0 auto;background:#fff;padding:16px;border-radius:12px;box-shadow:0 6px 18px rgba(0,0,0,0.06);display:flex;flex-direction:column;min-height:0;flex:1}
     /* Layout row: allow wrapping on narrow viewports */
     .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
     input[type=text]{flex:1 1 auto;min-width:120px;padding:10px 12px;border:1px solid #e6e9f2;border-radius:10px;box-sizing:border-box;outline:none;background:linear-gradient(180deg,#fff,#fbfdff);box-shadow:0 6px 18px rgba(79,84,255,0.06);transition:box-shadow .18s,transform .12s}
     input[type=text]:focus{box-shadow:0 10px 30px rgba(79,84,255,0.12);transform:translateY(-1px)}
     button{flex:0 0 auto;padding:10px 14px;background:linear-gradient(90deg,var(--accent-1),var(--accent-2));color:#fff;border:none;border-radius:10px;cursor:pointer;font-weight:600;box-shadow:0 8px 20px rgba(75,110,246,0.18);transition:transform .15s,box-shadow .15s}
     button:hover{transform:translateY(-3px);box-shadow:0 14px 30px rgba(75,110,246,0.22)}
-    .results{margin-top:12px}
+    .results{margin-top:12px;flex:1;overflow:auto;padding-right:6px}
     .item{padding:14px;border:1px solid rgba(15,23,32,0.04);border-radius:12px;margin-bottom:12px;display:flex;justify-content:space-between;gap:12px;align-items:flex-start;background:linear-gradient(180deg,#fff,#fbfdff);box-shadow:0 6px 18px rgba(16,24,40,0.03);transition:transform .12s,box-shadow .12s}
     .item:hover{transform:translateY(-4px);box-shadow:0 18px 40px rgba(16,24,40,0.06)}
     .meta{color:var(--muted);font-size:12px}
