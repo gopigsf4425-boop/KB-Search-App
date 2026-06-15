@@ -90,8 +90,8 @@
       if(!q){ return; }
       // Build request using brandId from context if available
       function buildAndRequest(brandId){
-        const brandQuery = brandId ? 'q=brands:[' + encodeURIComponent(brandId) + ']&' : '';
-        const url = '/kb-api/v1.0/articles/en-US?view=published&' + brandQuery + 'Page=1&PerPage=15&filter=' + encodeURIComponent(q) + '&orderBy=' + encodeURIComponent('lastModifiedOn desc') + '&requiresCounts=true';
+        const brandQuery = brandId ? 'q=brands:[' + brandId + ']&' : '';
+        const url = '/kb-api/v1.0/articles/en-US?view=published&' + brandQuery + 'Page=1&PerPage=15&filter=' + q;
 
         client.request({ url: url, type: 'GET', isInternal: true }).then(response => {
           const items = response && response.result ? response.result : [];
