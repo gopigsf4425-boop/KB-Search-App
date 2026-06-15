@@ -88,13 +88,35 @@
     function performSearch(){
       const q = document.getElementById('kb-query').value.trim();
       if(!q){ return; }
-      const url = '/kb-api/v1.0/articles/en-US?view=published&Page=1&PerPage=5&filter='+q;
+      // Build request using brandId from context if available
+      function buildAndRequest(brandId){
+        const brandQuery = brandId ? 'q=brands:[' + encodeURIComponent(brandId) + ']&' : '';
+        const url = '/kb-api/v1.0/articles/en-US?view=published&' + brandQuery + 'Page=1&PerPage=15&filter=' + encodeURIComponent(q) + '&orderBy=' + encodeURIComponent('lastModifiedOn desc') + '&requiresCounts=true';
 
-      client.request({ url: url, type: 'GET', isInternal: true }).then(response => {
-        const items = response && response.result ? response.result : [];
-        renderResults(items);
-      }).catch(err => {
-      });
+        client.request({ url: url, type: 'GET', isInternal: true }).then(response => {
+          const items = response && response.result ? response.result : [];
+          renderResults(items);
+        }).catch(err => {
+          console.error('KB request failed', err);
+        });
+      }
+
+      if (client && typeof client.context === 'function') {
+        // try to read single brand id from context
+        client.context('brandId').then(data => {
+          // `data` may be the id directly or an object containing the id
+          let bid = null;
+          if (data === null || data === undefined) bid = null;
+          else if (typeof data === 'object' && data.brandId !== undefined) bid = data.brandId;
+          else bid = data;
+          buildAndRequest(bid);
+        }).catch(err => {
+          console.warn('Failed to read brandId from context, proceeding without it', err);
+          buildAndRequest(null);
+        });
+      } else {
+        buildAndRequest(null);
+      }
     }
 
     // Wire UI
